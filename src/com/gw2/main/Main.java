@@ -17,10 +17,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
 import org.apache.http.client.HttpClient;
@@ -32,6 +28,9 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.util.EntityUtils;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import com.gw2.pojo.Events;
 
 public class Main {
@@ -47,9 +46,9 @@ public class Main {
 		    PreparedStatement prep = conn.prepareStatement("insert into events values (?, ?, ?, ?);");
 		    //123
 		    list = getJSONList("https://api.guildwars2.com/v1/events.json?world_id=1001");
-		    for(Object obj : list){
-		    	JSONObject jsonobj = JSONObject.fromObject(obj);
-		    	Events e = (Events) JSONObject.toBean(jsonobj, Events.class);
+		    for(int i=0;i<list.size();i++){
+//		    	JsonObject jsonobj = JsonObject.
+		    	Events e = (Events)list.get(i);
 		    	int world_id = e.getWorld_id();
 		    	int map_id = e.getMap_id();
 		    	String event_id = e.getEvent_id();
@@ -86,8 +85,15 @@ public class Main {
 	//        System.out.println(mResponse.getStatusLine());
 	//        System.out.println(mResponse.getEntity());
 	        String json = EntityUtils.toString(mResponse.getEntity());
-	        JSONArray jsonArray = (JSONArray)JSONSerializer.toJSON(json);
-	        List list = (List) JSONSerializer.toJava(jsonArray);
+	        Gson gson = new Gson();
+	        if(json.indexOf("[") != -1){
+	        	json.replace("[", "");
+	        }
+	        if(json.indexOf("]") != -1){
+	        	json.replace("]", "");
+	        }
+	        System.out.println(json);
+	        List<Events> list = gson.fromJson(json, new TypeToken<List<Events>>(){}.getType());
 	        return list;
 		} catch (KeyManagementException e) {
 			// TODO Auto-generated catch block
