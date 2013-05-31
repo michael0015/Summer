@@ -45,7 +45,7 @@ public class Main {
 		    conn = DriverManager.getConnection("jdbc:sqlite:db/guildwars2.db");
 		    Statement stat = conn.createStatement();
 		    PreparedStatement prep = conn.prepareStatement("insert into events values (?, ?, ?, ?);");
-		    
+		    //123
 		    list = getJSONList("https://api.guildwars2.com/v1/events.json?world_id=1001");
 		    for(Object obj : list){
 		    	JSONObject jsonobj = JSONObject.fromObject(obj);
